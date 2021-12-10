@@ -8,6 +8,7 @@ idna==3.3
 imageio==2.13.3
 imageio-ffmpeg==0.4.5
 moviepy==1.0.3
+mutagen==1.45.1
 numpy==1.21.4
 opencv-python==4.5.4.60
 Pillow==8.4.0

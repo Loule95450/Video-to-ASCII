@@ -4,13 +4,15 @@ This is the controller that will be used to control the program.
 """
 import os
 import sys
-from datetime import time
+import calendar;
+import time;
 
 import ascii_magic
 import cv2
 import glob
 from moviepy.editor import *
 from pygame import mixer  # Load the popular external library
+from mutagen.mp3 import MP3
 
 args = sys.argv
 
@@ -32,15 +34,32 @@ def remove_folders():
 def images_to_ascii(images):
     images.sort()
 
+    start_at = calendar.timegm(time.gmtime())
+
     mixer.init()
     mixer.music.load('./video/images/audio.mp3')
     mixer.music.play()
 
     for image in images:
-        image_id = int(image.split('/')[-1].split('.')[0])
+        image_id = image.split('/')[-1].split('.')[0]
+        last_image = int(images[len(images) - 1].split('/')[-1].split('.')[0])
+        video_duration = round(MP3('./video/images/audio.mp3').info.length)
+        actual_time = calendar.timegm(time.gmtime())
+        time_elapsed = actual_time - start_at
+        fps_recommanded = last_image / video_duration
+        images_recommanded = video_duration * fps_recommanded
 
-        my_art = ascii_magic.from_image_file(image)
-        ascii_magic.to_terminal(my_art)
+        try:
+            fps = round(int(image_id) / (actual_time - start_at))
+        except:
+            fps = fps_recommanded
+
+        if fps < fps_recommanded:
+            pass
+        else:
+            my_art = ascii_magic.from_image_file(image)
+            ascii_magic.to_terminal(my_art)
+            print("> " + str(time_elapsed) + "s/" + str(video_duration) + "s - " + str(fps) + "/fps")
 
 
 def video_to_images(video_path):
@@ -48,6 +67,7 @@ def video_to_images(video_path):
     video = cv2.VideoCapture(video_path)
     i = 0
     images = glob.glob("./video/images/*.jpg")
+    start_at = calendar.timegm(time.gmtime())
 
     while (video.isOpened()):
         ret, frame = video.read()
@@ -57,9 +77,13 @@ def video_to_images(video_path):
         file_name = str(i).zfill(5)
         cv2.imwrite('./video/images/' + str(file_name) + '.jpg', frame)
         print(chr(27) + "[2J")
-        print(str(round(i * 100 / video.get(cv2.CAP_PROP_FRAME_COUNT))) + '% done - ' + str(i) + '/' + str(
-            video.get(cv2.CAP_PROP_FRAME_COUNT)))
+        actual_time = calendar.timegm(time.gmtime())
+        try:
+            print("Downloding video - " + str(round(i * 100 / video.get(cv2.CAP_PROP_FRAME_COUNT))) + '% done - ' + str(i) + '/' + str(video.get(cv2.CAP_PROP_FRAME_COUNT)) + ' - ' + str(round(((video.get(cv2.CAP_PROP_FRAME_COUNT) - i) / i) * (actual_time - start_at))) + " seconds")
+        except:
+            print("Downloding video - " + str(round(i * 100 / video.get(cv2.CAP_PROP_FRAME_COUNT))) + '% done - ' + str(i) + '/' + str(video.get(cv2.CAP_PROP_FRAME_COUNT)))
         i += 1
+
 
     images.sort()
 
