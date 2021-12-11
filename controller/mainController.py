@@ -47,7 +47,6 @@ def images_to_ascii(images):
         actual_time = calendar.timegm(time.gmtime())
         time_elapsed = actual_time - start_at
         fps_recommanded = last_image / video_duration
-        images_recommanded = video_duration * fps_recommanded
 
         try:
             fps = round(int(image_id) / (actual_time - start_at))
@@ -57,6 +56,7 @@ def images_to_ascii(images):
         if fps < fps_recommanded:
             pass
         else:
+            # Return to line 50 times
             my_art = ascii_magic.from_image_file(image)
             ascii_magic.to_terminal(my_art)
             print("> " + str(time_elapsed) + "s/" + str(video_duration) + "s - " + str(fps) + "/fps")
