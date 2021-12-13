@@ -42,7 +42,7 @@ def images_to_ascii(images):
 
     for image in images:
         image_id = image.split('/')[-1].split('.')[0]
-        last_image = int(images[len(images) - 1].split('/')[-1].split('.')[0])
+        last_image = int(images[len(images) - 1].split('/')[-1].split('\\')[-1].split('.')[0])
         video_duration = round(MP3('./video/images/audio.mp3').info.length)
         actual_time = calendar.timegm(time.gmtime())
         time_elapsed = actual_time - start_at
